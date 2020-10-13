@@ -12,7 +12,9 @@ class EntrustServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->commands('command.entrust.migration');
+        $this->publishes([
+            __DIR__.'/../config/entrust.php' => config_path('entrust.php'),
+        ]);
     }
 
 
@@ -23,9 +25,11 @@ class EntrustServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->registerEntrust();
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/entrust.php', 'entrust'
+        );
 
-        $this->registerCommands();
+        $this->registerEntrust();
     }
 
 
@@ -43,19 +47,6 @@ class EntrustServiceProvider extends ServiceProvider
 
 
     /**
-     * Register the artisan commands.
-     *
-     * @return void
-     */
-    private function registerCommands()
-    {
-        $this->app->bindShared('command.entrust.migration', function ($app) {
-            return new MigrationCommand();
-        });
-    }
-
-
-    /**
      * Get the services provided.
      *
      * @return array
@@ -63,7 +54,6 @@ class EntrustServiceProvider extends ServiceProvider
     public function provides()
     {
         return [
-            'command.entrust.migration'
         ];
     }
 }
